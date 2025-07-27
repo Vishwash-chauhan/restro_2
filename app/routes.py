@@ -4,6 +4,12 @@ from app.models.models import Dish, Category
 from app.forms.forms import DishForm, CategoryForm
 import os
 from werkzeug.utils import secure_filename
+import uuid
+
+UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'images')
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/')
 def dashboard():
@@ -23,8 +29,12 @@ def add_dish():
     if form.validate_on_submit():
         filename = None
         if form.image.data:
-            filename = secure_filename(form.image.data.filename)
-            form.image.data.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            original_filename = secure_filename(form.image.data.filename)
+            ext = os.path.splitext(original_filename)[1]
+            unique_filename = f"{uuid.uuid4().hex}{ext}"
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+            form.image.data.save(image_path)
+            filename = unique_filename
         dish = Dish(
             name=form.name.data,
             image=filename,
@@ -49,9 +59,12 @@ def edit_dish(dish_id):
     form.category_id.choices = [(c.id, c.name) for c in Category.query.all()]
     if form.validate_on_submit():
         if form.image.data:
-            filename = secure_filename(form.image.data.filename)
-            form.image.data.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            dish.image = filename
+            original_filename = secure_filename(form.image.data.filename)
+            ext = os.path.splitext(original_filename)[1]
+            unique_filename = f"{uuid.uuid4().hex}{ext}"
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], unique_filename)
+            form.image.data.save(image_path)
+            dish.image = unique_filename
         dish.name = form.name.data
         dish.description = form.description.data
         dish.price_half = form.price_half.data
