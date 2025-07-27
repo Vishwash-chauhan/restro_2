@@ -2,11 +2,14 @@
 {% block content %}
 <div class="container mt-4">
     <h2>{{ action }} Category</h2>
-    <form method="POST">
+    <form method="POST" novalidate>
         {{ form.hidden_tag() }}
         <div class="mb-3">
             {{ form.name.label(class="form-label") }}
-            {{ form.name(class="form-control") }}
+            {{ form.name(class="form-control" + (' is-invalid' if form.name.errors else '')) }}
+            {% for error in form.name.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
         </div>
         <button type="submit" class="btn btn-primary">{{ action }}</button>
         <a href="{{ url_for('list_categories') }}" class="btn btn-secondary">Cancel</a>

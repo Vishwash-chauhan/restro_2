@@ -2,31 +2,49 @@
 {% block content %}
 <div class="container mt-4">
     <h2>{{ action }} Dish</h2>
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" enctype="multipart/form-data" novalidate>
         {{ form.hidden_tag() }}
         <div class="mb-3">
             {{ form.name.label(class="form-label") }}
-            {{ form.name(class="form-control") }}
+            {{ form.name(class="form-control" + (' is-invalid' if form.name.errors else '')) }}
+            {% for error in form.name.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
         </div>
         <div class="mb-3">
             {{ form.image.label(class="form-label") }}
-            {{ form.image(class="form-control") }}
+            {{ form.image(class="form-control" + (' is-invalid' if form.image.errors else '')) }}
+            {% for error in form.image.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
         </div>
         <div class="mb-3">
             {{ form.description.label(class="form-label") }}
-            {{ form.description(class="form-control") }}
+            {{ form.description(class="form-control" + (' is-invalid' if form.description.errors else '')) }}
+            {% for error in form.description.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
         </div>
         <div class="mb-3">
             {{ form.price_half.label(class="form-label") }}
-            {{ form.price_half(class="form-control") }}
+            {{ form.price_half(class="form-control" + (' is-invalid' if form.price_half.errors else '')) }}
+            {% for error in form.price_half.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
         </div>
         <div class="mb-3">
             {{ form.price_full.label(class="form-label") }}
-            {{ form.price_full(class="form-control") }}
+            {{ form.price_full(class="form-control" + (' is-invalid' if form.price_full.errors else '')) }}
+            {% for error in form.price_full.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
         </div>
         <div class="mb-3">
             {{ form.category_id.label(class="form-label") }}
-            {{ form.category_id(class="form-select") }}
+            {{ form.category_id(class="form-select" + (' is-invalid' if form.category_id.errors else '')) }}
+            {% for error in form.category_id.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
         </div>
         <div class="mb-3">
             {{ form.is_available() }} {{ form.is_available.label }}
@@ -36,7 +54,10 @@
         </div>
         <div class="mb-3">
             {{ form.spice_level.label(class="form-label") }}
-            {{ form.spice_level(class="form-select") }}
+            {{ form.spice_level(class="form-select" + (' is-invalid' if form.spice_level.errors else '')) }}
+            {% for error in form.spice_level.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+            {% endfor %}
         </div>
         <button type="submit" class="btn btn-primary">{{ action }}</button>
         <a href="{{ url_for('list_dishes') }}" class="btn btn-secondary">Cancel</a>
