@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Admin Dashboard</h2>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Dishes</h5>
+                    <p class="card-text">{{ dish_count }}</p>
+                    <a href="{{ url_for('list_dishes') }}" class="btn btn-primary">View Dishes</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Total Categories</h5>
+                    <p class="card-text">{{ category_count }}</p>
+                    <a href="{{ url_for('list_categories') }}" class="btn btn-primary">View Categories</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
