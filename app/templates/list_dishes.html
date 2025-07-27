@@ -23,10 +23,6 @@
                     </ul>
                     <div class="mt-2">
                         <a href="{{ url_for('edit_dish', dish_id=dish.id) }}" class="btn btn-primary btn-sm me-2">Edit</a>
-                        <form action="{{ url_for('delete_dish', dish_id=dish.id) }}" method="post" style="display:inline-block;">
-                            {% if form %}{{ form.hidden_tag() }}{% endif %}
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this dish?')">Delete</button>
-                        </form>
                     </div>
                 </div>
             </div>
