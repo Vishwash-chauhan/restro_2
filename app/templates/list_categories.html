@@ -17,7 +17,7 @@
                 <td>
                     <a href="{{ url_for('edit_category', category_id=category.id) }}" class="btn btn-primary btn-sm">Edit</a>
                     <form action="{{ url_for('delete_category', category_id=category.id) }}" method="post" style="display:inline-block;">
-                        {{ csrf_token() }}
+                        {% if form %}{{ form.hidden_tag() }}{% endif %}
                         <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this category?')">Delete</button>
                     </form>
                 </td>
