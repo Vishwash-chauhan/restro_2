@@ -15,6 +15,8 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
 from app import routes
+from app.public import public_bp
+app.register_blueprint(public_bp, url_prefix='/')
 
 if __name__ == '__main__':
     app.run(debug=True)
