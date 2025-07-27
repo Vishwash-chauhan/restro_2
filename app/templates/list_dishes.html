@@ -3,43 +3,35 @@
 <div class="container mt-4">
     <h2>Dishes</h2>
     <a href="{{ url_for('add_dish') }}" class="btn btn-success mb-3">Add Dish</a>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Image</th>
-                <th>Description</th>
-                <th>Price (Half)</th>
-                <th>Price (Full)</th>
-                <th>Category</th>
-                <th>Available</th>
-                <th>Vegetarian</th>
-                <th>Spice Level</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for dish in dishes %}
-            <tr>
-                <td>{{ dish.name }}</td>
-                <td>{% if dish.image %}<img src="{{ url_for('static', filename='images/' ~ dish.image) }}" width="60">{% endif %}</td>
-                <td>{{ dish.description }}</td>
-                <td>{{ dish.price_half }}</td>
-                <td>{{ dish.price_full }}</td>
-                <td>{{ dish.category.name }}</td>
-                <td>{{ 'Yes' if dish.is_available else 'No' }}</td>
-                <td>{{ 'Yes' if dish.is_vegetarian else 'No' }}</td>
-                <td>{{ dish.spice_level }}</td>
-                <td>
-                    <a href="{{ url_for('edit_dish', dish_id=dish.id) }}" class="btn btn-primary btn-sm">Edit</a>
-                    <form action="{{ url_for('delete_dish', dish_id=dish.id) }}" method="post" style="display:inline-block;">
-                        {% if form %}{{ form.hidden_tag() }}{% endif %}
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this dish?')">Delete</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="row">
+        {% for dish in dishes %}
+        <div class="col-12 col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                {% if dish.image %}
+                <img src="{{ url_for('static', filename='images/' ~ dish.image) }}" class="card-img-top" alt="{{ dish.name }}" style="object-fit:cover; height:180px;">
+                {% endif %}
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h5 class="card-title">{{ dish.name }}</h5>
+                    <p class="card-text">{{ dish.description }}</p>
+                    <ul class="list-group list-group-flush mb-2">
+                        <li class="list-group-item">Category: {{ dish.category.name }}</li>
+                        <li class="list-group-item">Price (Half): ₹{{ dish.price_half }}</li>
+                        <li class="list-group-item">Price (Full): ₹{{ dish.price_full }}</li>
+                        <li class="list-group-item">Available: {{ 'Yes' if dish.is_available else 'No' }}</li>
+                        <li class="list-group-item">Vegetarian: {{ 'Yes' if dish.is_vegetarian else 'No' }}</li>
+                        <li class="list-group-item">Spice Level: {{ dish.spice_level }}</li>
+                    </ul>
+                    <div class="mt-2">
+                        <a href="{{ url_for('edit_dish', dish_id=dish.id) }}" class="btn btn-primary btn-sm me-2">Edit</a>
+                        <form action="{{ url_for('delete_dish', dish_id=dish.id) }}" method="post" style="display:inline-block;">
+                            {% if form %}{{ form.hidden_tag() }}{% endif %}
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this dish?')">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 {% endblock %}
