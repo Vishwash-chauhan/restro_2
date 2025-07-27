@@ -19,6 +19,7 @@
     <div class="row">
         {% for dish in dishes %}
         <div class="col-12 col-md-6 col-lg-4 mb-4">
+            <a href="{{ url_for('public.dish_detail', dish_id=dish.id) }}" style="text-decoration:none;color:inherit;">
             <div class="card h-100 shadow-sm">
                 {% if dish.image %}
                 <img src="{{ url_for('static', filename='images/' ~ dish.image) }}" class="card-img-top" alt="{{ dish.name }}" style="object-fit:cover; height:180px;">
@@ -35,6 +36,7 @@
                     </div>
                 </div>
             </div>
+            </a>
         </div>
         {% endfor %}
     </div>

@@ -12,3 +12,8 @@ def menu():
     else:
         dishes = Dish.query.filter_by(is_available=True).all()
     return render_template('public_menu.html', categories=categories, dishes=dishes, selected_category=category_id)
+
+@public_bp.route('/shivdhaba/dish/<int:dish_id>')
+def dish_detail(dish_id):
+    dish = Dish.query.get_or_404(dish_id)
+    return render_template('dish_detail.html', dish=dish)
