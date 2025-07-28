@@ -63,5 +63,14 @@ console.log('SESSION COOKIE:', document.cookie);
             </div>
         </div>
         {% endfor %}
+        
     </div>
+</div>
+<!-- Floating Cart Icon -->
+<a href="{{ url_for('public.view_cart') }}" style="position:fixed; bottom:2rem; right:2rem; z-index:1050; display:flex; align-items:center; justify-content:center; width:56px; height:56px; background:#fff; border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,0.15); border:1px solid #e5e7eb; text-decoration:none;" class="shadow-lg">
+    <span style="position:absolute; top:8px; right:8px; background:#22c55e; color:#fff; border-radius:9999px; font-size:0.8rem; padding:2px 7px; min-width:22px; text-align:center; font-weight:600;">{{ cart_item_count or 0 }}</span>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:32px; height:32px; color:#16a34a;">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437m0 0L7.04 15.607A2.25 2.25 0 009.246 17.25h5.508a2.25 2.25 0 002.206-1.643l1.516-6.063a1.125 1.125 0 00-1.09-1.419H6.654m-1.548-4.356L4.5 6.75m0 0h16.125m-16.125 0l1.548 4.356m0 0h12.51" />
+    </svg>
+</a>
 </div>
