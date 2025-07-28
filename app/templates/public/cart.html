@@ -2,35 +2,46 @@
 <div class="container-fluid px-2 px-md-5">
     <h2 class="fw-bold mb-4">Your Cart</h2>
     {% if cart_items %}
-    <form method="post" action="">
     <div class="row">
         {% for item in cart_items %}
         <div class="col-12 col-md-6 col-lg-4 mb-4">
             <div class="card h-100 shadow-sm">
                 {% if item.image %}
-                <img src="{{ url_for('static', filename='images/' ~ item.image) }}" class="card-img-top" alt="{{ item.name }}" style="object-fit:cover; height:180px;">
+                <img src="{{ url_for('static', filename='images/' ~ item.image) }}" class="card-img-top mb-2" alt="{{ item.name }}" style="object-fit:cover; height:180px;">
                 {% endif %}
                 <div class="card-body d-flex flex-column justify-content-between">
                     <h5 class="card-title">{{ item.name }}</h5>
                     <p class="mb-2"><strong>Category:</strong> {{ item.category }}</p>
-                    <form method="post" action="{{ url_for('public.update_cart', dish_id=item.id) }}">
-                        <div class="mb-2">
+                    <form method="post" action="{{ url_for('public.update_cart', dish_id=item.id) }}" class="mb-2">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="d-flex flex-column gap-2">
                             {% if item.price_half %}
-                            <label>Half:</label>
-                            <input type="number" name="half_qty" value="{{ item.half }}" min="0" class="form-control d-inline-block w-auto" style="width:70px;">
-                            <span class="badge bg-primary">₹{{ item.price_half }}</span>
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="me-1 mb-0" style="min-width:40px;">Half:</label>
+                                <button type="button" class="btn btn-outline-secondary btn-sm px-2 py-0" onclick="this.nextElementSibling.stepDown(); this.nextElementSibling.dispatchEvent(new Event('change'))">-</button>
+                                <input type="number" name="half_qty" value="{{ item.half }}" min="0" class="form-control form-control-sm px-1 text-center" style="width:40px; display:inline-block;" oninput="if(this.value<0)this.value=0">
+                                <button type="button" class="btn btn-outline-secondary btn-sm px-2 py-0" onclick="this.previousElementSibling.stepUp(); this.previousElementSibling.dispatchEvent(new Event('change'))">+</button>
+                                <span class="badge bg-primary ms-2">₹{{ item.price_half }}</span>
+                            </div>
                             {% endif %}
                             {% if item.price_full %}
-                            <label>Full:</label>
-                            <input type="number" name="full_qty" value="{{ item.full }}" min="0" class="form-control d-inline-block w-auto" style="width:70px;">
-                            <span class="badge bg-success">₹{{ item.price_full }}</span>
+                            <div class="d-flex align-items-center gap-2">
+                                <label class="me-1 mb-0" style="min-width:40px;">Full:</label>
+                                <button type="button" class="btn btn-outline-secondary btn-sm px-2 py-0" onclick="this.nextElementSibling.stepDown(); this.nextElementSibling.dispatchEvent(new Event('change'))">-</button>
+                                <input type="number" name="full_qty" value="{{ item.full }}" min="0" class="form-control form-control-sm px-1 text-center" style="width:40px; display:inline-block;" oninput="if(this.value<0)this.value=0">
+                                <button type="button" class="btn btn-outline-secondary btn-sm px-2 py-0" onclick="this.previousElementSibling.stepUp(); this.previousElementSibling.dispatchEvent(new Event('change'))">+</button>
+                                <span class="badge bg-success ms-2">₹{{ item.price_full }}</span>
+                            </div>
                             {% endif %}
                         </div>
-                        <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
-                    </form>
-                    <form method="post" action="{{ url_for('public.remove_from_cart', dish_id=item.id) }}" class="mt-2">
-                        <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
-                    </form>
+                        <div class="d-flex gap-2 mt-2">
+                            <button type="submit" class="btn btn-outline-primary btn-sm">Update</button>
+                            </form>
+                            <form method="post" action="{{ url_for('public.remove_from_cart', dish_id=item.id) }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
+                            </form>
+                        </div>
                     <div class="mt-2"><strong>Item Total:</strong> ₹{{ item.item_total }}</div>
                 </div>
             </div>
