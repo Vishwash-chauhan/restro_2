@@ -16,7 +16,14 @@ migrate = Migrate(app, db)
 
 from app import routes
 from app.public import public_bp
+
 app.register_blueprint(public_bp, url_prefix='/')
+
+# Ensure csrf_token is available in all templates
+@app.context_processor
+def inject_csrf_token():
+    from flask_wtf.csrf import generate_csrf
+    return dict(csrf_token=generate_csrf)
 
 if __name__ == '__main__':
     app.run(debug=True)

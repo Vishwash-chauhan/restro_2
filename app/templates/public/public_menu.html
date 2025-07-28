@@ -1,4 +1,9 @@
 {% include 'public_navbar.html' %}
+<script>
+// Debug: Show session cookie value in console
+console.log('SESSION COOKIE:', document.cookie);
+</script>
+<div class="alert alert-info">Session test value: {{ session_test }}</div>
 <div class="container-fluid px-2 px-md-5">
     <h2 class="fw-bold mb-4">Our Menu</h2>
     <form method="get" class="mb-4">
@@ -19,24 +24,43 @@
     <div class="row">
         {% for dish in dishes %}
         <div class="col-12 col-md-6 col-lg-4 mb-4">
-            <a href="{{ url_for('public.dish_detail', dish_id=dish.id) }}" style="text-decoration:none;color:inherit;">
             <div class="card h-100 shadow-sm">
-                {% if dish.image %}
-                <img src="{{ url_for('static', filename='images/' ~ dish.image) }}" class="card-img-top" alt="{{ dish.name }}" style="object-fit:cover; height:180px;">
-                {% endif %}
-                <div class="card-body d-flex flex-column justify-content-between">
-                    <h5 class="card-title">{{ dish.name }}</h5>
-                    <div class="mb-2">
-                        {% if dish.price_half %}
-                        <span class="badge bg-primary">Half: ₹{{ dish.price_half }}</span>
+                    <!-- DEBUG: CSRF token value: {{ csrf_token() }} -->
+                    <form method="post" action="{{ url_for('public.add_to_cart', dish_id=dish.id) }}">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="card-body d-flex flex-column justify-content-between">
+                        <a href="{{ url_for('public.dish_detail', dish_id=dish.id) }}" style="text-decoration:none;color:inherit;">
+                        {% if dish.image %}
+                        <img src="{{ url_for('static', filename='images/' ~ dish.image) }}" class="card-img-top mb-2" alt="{{ dish.name }}" style="object-fit:cover; height:180px;">
                         {% endif %}
-                        {% if dish.price_full %}
-                        <span class="badge bg-success">Full: ₹{{ dish.price_full }}</span>
-                        {% endif %}
+                        <h5 class="card-title">{{ dish.name }}</h5>
+                        </a>
+                        <div class="mb-2">
+                            <div class="d-flex flex-column gap-2">
+                                {% if dish.price_half %}
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="me-1 mb-0" style="min-width:40px;">Half:</label>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm px-2 py-0" onclick="this.nextElementSibling.stepDown(); this.nextElementSibling.dispatchEvent(new Event('change'))">-</button>
+                                    <input type="number" name="half_qty" value="0" min="0" class="form-control form-control-sm px-1 text-center" style="width:40px; display:inline-block;" oninput="if(this.value<0)this.value=0">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm px-2 py-0" onclick="this.previousElementSibling.stepUp(); this.previousElementSibling.dispatchEvent(new Event('change'))">+</button>
+                                    <span class="badge bg-primary ms-2">₹{{ dish.price_half }}</span>
+                                </div>
+                                {% endif %}
+                                {% if dish.price_full %}
+                                <div class="d-flex align-items-center gap-2">
+                                    <label class="me-1 mb-0" style="min-width:40px;">Full:</label>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm px-2 py-0" onclick="this.nextElementSibling.stepDown(); this.nextElementSibling.dispatchEvent(new Event('change'))">-</button>
+                                    <input type="number" name="full_qty" value="0" min="0" class="form-control form-control-sm px-1 text-center" style="width:40px; display:inline-block;" oninput="if(this.value<0)this.value=0">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm px-2 py-0" onclick="this.previousElementSibling.stepUp(); this.previousElementSibling.dispatchEvent(new Event('change'))">+</button>
+                                    <span class="badge bg-success ms-2">₹{{ dish.price_full }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-outline-success btn-sm mt-2">Add to Cart</button>
                     </div>
-                </div>
+                </form>
             </div>
-            </a>
         </div>
         {% endfor %}
     </div>
