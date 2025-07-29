@@ -14,7 +14,10 @@ def menu():
         dishes = Dish.query.filter_by(category_id=category_id, is_available=True).all()
     else:
         dishes = Dish.query.filter_by(is_available=True).all()
-    return render_template('/public/public_menu.html', categories=categories, dishes=dishes, selected_category=category_id, session_test=session['test_key'])
+    # Calculate cart_count
+    cart = session.get('cart', {})
+    cart_count = sum((item.get('half', 0) + item.get('full', 0)) for item in cart.values())
+    return render_template('/public/public_menu.html', categories=categories, dishes=dishes, selected_category=category_id, session_test=session['test_key'], cart_count=cart_count)
 
 @public_bp.route('/shivdhaba/dish/<int:dish_id>')
 def dish_detail(dish_id):
