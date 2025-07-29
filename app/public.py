@@ -48,6 +48,56 @@ def view_cart():
         })
     return render_template('cart.html', cart_items=cart_items, total=total)
 
+from app.models.order import ShivdhabaOrder
+import json
+import re
+
+@public_bp.route('/shivdhaba/cart/checkout', methods=['POST'])
+def checkout():
+    cart = session.get('cart', {})
+    total = 0
+    items = []
+    for dish_id, item in cart.items():
+        dish = Dish.query.get(dish_id)
+        if not dish:
+            continue
+        item_total = (item.get('half', 0) * dish.price_half if dish.price_half else 0) + (item.get('full', 0) * dish.price_full if dish.price_full else 0)
+        total += item_total
+        items.append({
+            'id': dish_id,
+            'name': dish.name,
+            'half': item.get('half', 0),
+            'full': item.get('full', 0),
+            'price_half': dish.price_half,
+            'price_full': dish.price_full,
+            'item_total': item_total
+        })
+    name = request.form.get('name', '').strip()
+    mobile = request.form.get('mobile', '').strip()
+    address = request.form.get('address', '').strip()
+    instructions = request.form.get('instructions', '').strip()
+    # Mobile validation: 10 digits, starts with 6-9
+    if not re.match(r'^[6-9]\d{9}$', mobile):
+        flash('Invalid mobile number. Please enter a valid 10-digit mobile number starting with 6-9.', 'danger')
+        return redirect(url_for('public.view_cart'))
+    if not name or not address:
+        flash('Name and address are required.', 'danger')
+        return redirect(url_for('public.view_cart'))
+    order = ShivdhabaOrder(
+        name=name,
+        mobile=mobile,
+        address=address,
+        instructions=instructions,
+        items=json.dumps(items),
+        total=total
+    )
+    from app import db
+    db.session.add(order)
+    db.session.commit()
+    session['cart'] = {}
+    flash('Order placed successfully! Thank you for ordering.', 'success')
+    return redirect(url_for('public.menu'))
+
 @public_bp.route('/shivdhaba/cart/add/<int:dish_id>', methods=['POST'])
 def add_to_cart(dish_id):
     dish = Dish.query.get_or_404(dish_id)

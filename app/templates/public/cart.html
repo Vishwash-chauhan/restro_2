@@ -1,57 +1,122 @@
 {% include 'public_navbar.html' %}
-<div class="container-fluid px-2 px-md-5">
-    <h2 class="fw-bold mb-4">Your Cart</h2>
+<div class="container mx-auto px-2 md:px-8">
+    <h2 class="font-bold text-2xl md:text-3xl mb-6 mt-2">Your Cart</h2>
     {% if cart_items %}
-    <div class="row">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for item in cart_items %}
-        <div class="col-12 col-md-6 col-lg-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                {% if item.image %}
-                <img src="{{ url_for('static', filename='images/' ~ item.image) }}" class="card-img-top mb-2" alt="{{ item.name }}" style="object-fit:cover; height:180px;">
-                {% endif %}
-                <div class="card-body d-flex flex-column justify-content-between">
-                    <h5 class="card-title">{{ item.name }}</h5>
-                    <p class="mb-2"><strong>Category:</strong> {{ item.category }}</p>
-                    <form method="post" action="{{ url_for('public.update_cart', dish_id=item.id) }}" class="mb-2">
+        <div class="bg-white rounded-xl shadow hover:shadow-lg transition h-full flex flex-col">
+            {% if item.image %}
+            <img src="{{ url_for('static', filename='images/' ~ item.image) }}" class="rounded-t-xl w-full object-cover mb-2" alt="{{ item.name }}" style="height:180px;">
+            {% endif %}
+            <div class="flex flex-col justify-between flex-1 px-4 py-3">
+                <h5 class="font-bold text-lg mb-1">{{ item.name }}</h5>
+                <p class="mb-2 text-gray-600"><span class="font-semibold">Category:</span> {{ item.category }}</p>
+                <form method="post" action="{{ url_for('public.update_cart', dish_id=item.id) }}" class="mb-2">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="flex flex-col gap-2">
+                        {% if item.price_half %}
+                        <div class="flex items-center gap-2">
+                            <label class="min-w-[40px] text-sm">Half:</label>
+                            <button type="button" class="bg-gray-200 text-gray-700 rounded px-2 py-1 text-xs font-bold" onclick="this.nextElementSibling.stepDown(); this.nextElementSibling.dispatchEvent(new Event('change'))">-</button>
+                            <input type="number" name="half_qty" value="{{ item.half }}" min="0" class="w-12 text-center border rounded px-1 py-1 text-sm" oninput="if(this.value<0)this.value=0">
+                            <button type="button" class="bg-gray-200 text-gray-700 rounded px-2 py-1 text-xs font-bold" onclick="this.previousElementSibling.stepUp(); this.previousElementSibling.dispatchEvent(new Event('change'))">+</button>
+                            <span class="bg-blue-600 text-white rounded px-2 py-1 text-xs ml-2">₹{{ item.price_half }}</span>
+                        </div>
+                        {% endif %}
+                        {% if item.price_full %}
+                        <div class="flex items-center gap-2">
+                            <label class="min-w-[40px] text-sm">Full:</label>
+                            <button type="button" class="bg-gray-200 text-gray-700 rounded px-2 py-1 text-xs font-bold" onclick="this.nextElementSibling.stepDown(); this.nextElementSibling.dispatchEvent(new Event('change'))">-</button>
+                            <input type="number" name="full_qty" value="{{ item.full }}" min="0" class="w-12 text-center border rounded px-1 py-1 text-sm" oninput="if(this.value<0)this.value=0">
+                            <button type="button" class="bg-gray-200 text-gray-700 rounded px-2 py-1 text-xs font-bold" onclick="this.previousElementSibling.stepUp(); this.previousElementSibling.dispatchEvent(new Event('change'))">+</button>
+                            <span class="bg-green-600 text-white rounded px-2 py-1 text-xs ml-2">₹{{ item.price_full }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                        <button type="submit" class="border border-blue-600 text-blue-600 rounded-lg px-4 py-1 text-sm font-semibold hover:bg-blue-50 transition">Update</button>
+                    </form>
+                    <form method="post" action="{{ url_for('public.remove_from_cart', dish_id=item.id) }}">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <div class="d-flex flex-column gap-2">
-                            {% if item.price_half %}
-                            <div class="d-flex align-items-center gap-2">
-                                <label class="me-1 mb-0" style="min-width:40px;">Half:</label>
-                                <button type="button" class="btn btn-outline-secondary btn-sm px-2 py-0" onclick="this.nextElementSibling.stepDown(); this.nextElementSibling.dispatchEvent(new Event('change'))">-</button>
-                                <input type="number" name="half_qty" value="{{ item.half }}" min="0" class="form-control form-control-sm px-1 text-center" style="width:40px; display:inline-block;" oninput="if(this.value<0)this.value=0">
-                                <button type="button" class="btn btn-outline-secondary btn-sm px-2 py-0" onclick="this.previousElementSibling.stepUp(); this.previousElementSibling.dispatchEvent(new Event('change'))">+</button>
-                                <span class="badge bg-primary ms-2">₹{{ item.price_half }}</span>
-                            </div>
-                            {% endif %}
-                            {% if item.price_full %}
-                            <div class="d-flex align-items-center gap-2">
-                                <label class="me-1 mb-0" style="min-width:40px;">Full:</label>
-                                <button type="button" class="btn btn-outline-secondary btn-sm px-2 py-0" onclick="this.nextElementSibling.stepDown(); this.nextElementSibling.dispatchEvent(new Event('change'))">-</button>
-                                <input type="number" name="full_qty" value="{{ item.full }}" min="0" class="form-control form-control-sm px-1 text-center" style="width:40px; display:inline-block;" oninput="if(this.value<0)this.value=0">
-                                <button type="button" class="btn btn-outline-secondary btn-sm px-2 py-0" onclick="this.previousElementSibling.stepUp(); this.previousElementSibling.dispatchEvent(new Event('change'))">+</button>
-                                <span class="badge bg-success ms-2">₹{{ item.price_full }}</span>
-                            </div>
-                            {% endif %}
-                        </div>
-                        <div class="d-flex gap-2 mt-2">
-                            <button type="submit" class="btn btn-outline-primary btn-sm">Update</button>
-                            </form>
-                            <form method="post" action="{{ url_for('public.remove_from_cart', dish_id=item.id) }}">
-                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                <button type="submit" class="btn btn-outline-danger btn-sm">Remove</button>
-                            </form>
-                        </div>
-                    <div class="mt-2"><strong>Item Total:</strong> ₹{{ item.item_total }}</div>
-                </div>
+                        <button type="submit" class="border border-red-600 text-red-600 rounded-lg px-4 py-1 text-sm font-semibold hover:bg-red-50 transition">Remove</button>
+                    </form>
+                    </div>
+                <div class="mt-2 text-right"><span class="font-semibold">Item Total:</span> ₹{{ item.item_total }}</div>
             </div>
         </div>
         {% endfor %}
     </div>
-    <div class="mt-4">
-        <h4>Total: ₹{{ total }}</h4>
+    <div class="mt-6 text-right">
+        <h4 class="font-bold text-xl">Total: ₹{{ total }}</h4>
     </div>
     {% else %}
-    <div class="alert alert-info">Your cart is empty.</div>
+    <div class="bg-blue-50 text-blue-900 px-4 py-2 rounded mb-4 text-sm">Your cart is empty.</div>
     {% endif %}
 </div>
+
+<!-- Checkout Button and Modal -->
+{% if cart_items %}
+<div class="fixed bottom-0 left-0 w-full bg-white shadow-lg py-3 px-4 flex justify-center z-40">
+    <button id="checkoutBtn" type="button" class="bg-blue-600 text-white font-semibold rounded-lg px-6 py-2 shadow hover:bg-blue-700 transition-all w-full max-w-xs md:max-w-sm">Checkout</button>
+</div>
+
+<div id="checkoutModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-xl shadow-2xl border border-gray-100 w-full max-w-md mx-2 p-0 overflow-hidden relative">
+    <button type="button" id="closeModal" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl font-bold">&times;</button>
+    <div class="bg-blue-600 text-white py-4 px-6 text-center rounded-t-xl">
+      <h5 class="text-2xl font-bold tracking-wide">Checkout</h5>
+    </div>
+    <form method="post" action="{{ url_for('public.checkout') }}" class="p-6 space-y-4">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-semibold text-gray-700">Name</label>
+        <input type="text" name="name" required class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition placeholder:text-gray-400 bg-gray-50" placeholder="Your Name">
+      </div>
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-semibold text-gray-700">Mobile Number</label>
+        <input type="tel" name="mobile" required pattern="[0-9]{10}" maxlength="10" class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition placeholder:text-gray-400 bg-gray-50" placeholder="10-digit Mobile">
+      </div>
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-semibold text-gray-700">Address</label>
+        <textarea name="address" required rows="2" class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition placeholder:text-gray-400 bg-gray-50 resize-none" placeholder="Delivery Address"></textarea>
+      </div>
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-semibold text-gray-700">Special Instructions</label>
+        <textarea name="instructions" rows="2" class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 transition placeholder:text-gray-400 bg-gray-50 resize-none" placeholder="Any instructions (optional)"></textarea>
+      </div>
+      <div class="flex items-center justify-between bg-gray-100 rounded-xl px-4 py-3 mt-2 border border-gray-200">
+        <span class="font-semibold text-gray-700">Amount:</span>
+        <span class="text-lg font-bold text-blue-600">₹{{ total }}</span>
+      </div>
+      <div class="flex flex-col gap-2 mt-2">
+        <label class="text-sm font-semibold text-gray-700 mb-1">Payment Method</label>
+        <div class="flex items-center gap-2">
+          <input type="radio" id="cod" name="payment_method" value="cod" checked class="accent-blue-600">
+          <label for="cod" class="text-sm">Cash on Delivery</label>
+        </div>
+      </div>
+      <button type="submit" class="w-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold rounded-xl px-6 py-3 shadow-lg hover:from-green-700 hover:to-green-600 transition-all text-lg mt-2">Place Order</button>
+    </form>
+  </div>
+</div>
+<script>
+    const checkoutBtn = document.getElementById('checkoutBtn');
+    const checkoutModal = document.getElementById('checkoutModal');
+    const closeModal = document.getElementById('closeModal');
+    checkoutBtn.addEventListener('click', () => {
+        checkoutModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    });
+    closeModal.addEventListener('click', () => {
+        checkoutModal.classList.add('hidden');
+        document.body.style.overflow = '';
+    });
+    checkoutModal.addEventListener('click', (e) => {
+        if (e.target === checkoutModal) {
+            checkoutModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+    });
+</script>
+{% endif %}
+

@@ -1,33 +1,33 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container mt-4">
-    <h2>Dishes</h2>
-    <a href="{{ url_for('add_dish') }}" class="btn btn-success mb-3">Add Dish</a>
-    <div class="row">
+<div class="max-w-6xl mx-auto mt-10 bg-white rounded-xl shadow p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="font-bold text-2xl text-gray-900">Dishes</h2>
+        <a href="{{ url_for('add_dish') }}" class="bg-blue-600 text-white font-semibold rounded px-4 py-2 shadow hover:bg-blue-700 transition-all text-sm">Add Dish</a>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for dish in dishes %}
-        <div class="col-12 col-md-6 col-lg-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                {% if dish.image %}
-                <img src="{{ url_for('static', filename='images/' ~ dish.image) }}" class="card-img-top" alt="{{ dish.name }}" style="object-fit:cover; height:180px;">
-                {% endif %}
-                <div class="card-body d-flex flex-column justify-content-between">
-                    <h5 class="card-title">{{ dish.name }}</h5>
-                    <p class="card-text">{{ dish.description }}</p>
-                    <ul class="list-group list-group-flush mb-2">
-                        <li class="list-group-item">Category: {{ dish.category.name }}</li>
-                        <li class="list-group-item">Price (Half): ₹{{ dish.price_half }}</li>
-                        <li class="list-group-item">Price (Full): ₹{{ dish.price_full }}</li>
-                        <li class="list-group-item">Available: {{ 'Yes' if dish.is_available else 'No' }}</li>
-                        <li class="list-group-item">Vegetarian: {{ 'Yes' if dish.is_vegetarian else 'No' }}</li>
-                        <li class="list-group-item">Spice Level: {{ dish.spice_level }}</li>
-                    </ul>
-                    <div class="mt-2">
-                        <a href="{{ url_for('edit_dish', dish_id=dish.id) }}" class="btn btn-primary btn-sm me-2">Edit</a>
-                        <form action="{{ url_for('delete_dish', dish_id=dish.id) }}" method="post" style="display:inline-block;">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Delete this dish?')">Delete</button>
-                        </form>
-                    </div>
+        <div class="bg-gray-50 rounded-lg shadow hover:shadow-lg transition flex flex-col h-full">
+            {% if dish.image %}
+            <img src="{{ url_for('static', filename='images/' ~ dish.image) }}" alt="{{ dish.name }}" class="w-full h-40 object-cover rounded-t-lg">
+            {% endif %}
+            <div class="p-4 flex flex-col flex-1">
+                <h3 class="font-semibold text-lg text-gray-800 mb-1">{{ dish.name }}</h3>
+                <p class="text-gray-600 text-sm mb-2">{{ dish.description }}</p>
+                <ul class="text-xs text-gray-700 mb-3">
+                    <li><span class="font-medium">Category:</span> {{ dish.category.name }}</li>
+                    <li><span class="font-medium">Price (Half):</span> ₹{{ dish.price_half }}</li>
+                    <li><span class="font-medium">Price (Full):</span> ₹{{ dish.price_full }}</li>
+                    <li><span class="font-medium">Available:</span> {{ 'Yes' if dish.is_available else 'No' }}</li>
+                    <li><span class="font-medium">Vegetarian:</span> {{ 'Yes' if dish.is_vegetarian else 'No' }}</li>
+                    <li><span class="font-medium">Spice Level:</span> {{ dish.spice_level }}</li>
+                </ul>
+                <div class="flex gap-2 mt-auto">
+                    <a href="{{ url_for('edit_dish', dish_id=dish.id) }}" class="bg-yellow-400 text-white rounded px-3 py-1 text-xs font-semibold hover:bg-yellow-500 transition">Edit</a>
+                    <form action="{{ url_for('delete_dish', dish_id=dish.id) }}" method="post" class="inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="bg-red-500 text-white rounded px-3 py-1 text-xs font-semibold hover:bg-red-600 transition" onclick="return confirm('Delete this dish?')">Delete</button>
+                    </form>
                 </div>
             </div>
         </div>

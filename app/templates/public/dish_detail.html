@@ -1,34 +1,46 @@
+
+
 {% include 'public_navbar.html' %}
-<div class="container-fluid px-2 px-md-5">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6">
-            <div class="card shadow-sm mt-4">
+<div class="container mx-auto px-2 md:px-8">
+    <div class="flex justify-center">
+        <div class="w-full md:max-w-lg lg:max-w-xl">
+            <div class="bg-white rounded-xl shadow hover:shadow-lg transition h-full flex flex-col mt-8">
                 {% if dish.image %}
-                <img src="{{ url_for('static', filename='images/' ~ dish.image) }}" class="card-img-top" alt="{{ dish.name }}" style="object-fit:cover; height:240px;">
+                <img src="{{ url_for('static', filename='images/' ~ dish.image) }}" class="rounded-t-xl w-full object-cover mb-2" alt="{{ dish.name }}" style="height:240px;">
                 {% endif %}
-                <div class="card-body">
-                    <h2 class="card-title fw-bold mb-3">{{ dish.name }}</h2>
-                    <p class="mb-2"><strong>Category:</strong> {{ dish.category.name }}</p>
-                    <p class="mb-2"><strong>Description:</strong> {{ dish.description }}</p>
-                    <form method="post" action="{{ url_for('public.add_to_cart', dish_id=dish.id) }}">
+                <div class="flex flex-col justify-between flex-1 px-4 py-3">
+                    <h2 class="font-bold text-2xl mb-2 text-gray-900">{{ dish.name }}</h2>
+                    <p class="mb-2 text-gray-600"><span class="font-semibold"></span> {{ dish.description }}</p>
+                    <p class="mb-2 text-gray-900"><span class="font-semibold"></span> {{ dish.category.name }}</p>
+                    
+                    <form method="post" action="{{ url_for('public.add_to_cart', dish_id=dish.id) }}" class="mb-2">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <div class="mb-2">
+                        <div class="flex flex-col gap-2">
                             {% if dish.price_half %}
-                            <label class="me-2">Half:</label>
-                            <input type="number" name="half_qty" value="0" min="0" class="form-control d-inline-block w-auto" style="width:70px;">
-                            <span class="badge bg-primary">₹{{ dish.price_half }}</span>
+                            <div class="flex items-center gap-2">
+                                <label class="min-w-[40px] text-sm">Half:</label>
+                                <input type="number" name="half_qty" value="0" min="0" class="w-12 text-center border rounded px-1 py-1 text-sm" oninput="if(this.value<0)this.value=0">
+                                <span class="bg-blue-600 text-white rounded px-2 py-1 text-xs ml-2">₹{{ dish.price_half }}</span>
+                            </div>
                             {% endif %}
                             {% if dish.price_full %}
-                            <label class="me-2">Full:</label>
-                            <input type="number" name="full_qty" value="0" min="0" class="form-control d-inline-block w-auto" style="width:70px;">
-                            <span class="badge bg-success">₹{{ dish.price_full }}</span>
+                            <div class="flex items-center gap-2">
+                                <label class="min-w-[40px] text-sm">Full:</label>
+                                <input type="number" name="full_qty" value="0" min="0" class="w-12 text-center border rounded px-1 py-1 text-sm" oninput="if(this.value<0)this.value=0">
+                                <span class="bg-green-600 text-white rounded px-2 py-1 text-xs ml-2">₹{{ dish.price_full }}</span>
+                            </div>
                             {% endif %}
                         </div>
-                        <button type="submit" class="btn btn-outline-success btn-sm mt-2">Add to Cart</button>
+                        <div class="mt-4 flex justify-center gap-2">
+                            <button type="submit" class="border border-green-600 text-green-600 rounded-lg px-4 py-1 text-sm font-semibold hover:bg-green-50 transition w-1/2">Add to Cart</button>
+                            <a href="{{ url_for('public.menu') }}" class="border border-blue-600 text-blue-600 rounded-lg px-4 py-1 text-sm font-semibold hover:bg-blue-50 transition w-1/2 text-center">Back to Menu</a>
+                        </div>
                     </form>
-                    <p class="mb-2"><strong>Available:</strong> {{ 'Yes' if dish.is_available else 'No' }}</p>
-                    <p class="mb-2"><strong>Vegetarian:</strong> {{ 'Yes' if dish.is_vegetarian else 'No' }}</p>
-                    <p class="mb-2"><strong>Spice Level:</strong> {{ dish.spice_level }}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-gray-700 mt-4">
+                        <p class="mb-2"><span class="font-semibold">Available:</span> {{ 'Yes' if dish.is_available else 'No' }}</p>
+                        <p class="mb-2"><span class="font-semibold">Vegetarian:</span> {{ 'Yes' if dish.is_vegetarian else 'No' }}</p>
+                        <p class="mb-2"><span class="font-semibold">Spice Level:</span> {{ dish.spice_level }}</p>
+                    </div>
                 </div>
             </div>
         </div>
