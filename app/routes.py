@@ -6,6 +6,12 @@ import os
 from werkzeug.utils import secure_filename
 import uuid
 
+# Admin order management imports
+from app.models.order import ShivdhabaOrder
+from flask import jsonify, request
+from sqlalchemy import desc
+import json
+
 UPLOAD_FOLDER = os.path.join(app.root_path, 'static', 'images')
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
@@ -17,6 +23,58 @@ def dashboard():
     category_count = Category.query.count()
     return render_template('dashboard.html', dish_count=dish_count, category_count=category_count)
 
+@app.route('/admin/orders')
+def admin_orders_today():
+    from datetime import datetime, timedelta
+    today = datetime.now().date()
+    orders_today = ShivdhabaOrder.query.filter(
+        ShivdhabaOrder.created_at >= today,
+        ShivdhabaOrder.created_at < today + timedelta(days=1)
+    ).order_by(desc(ShivdhabaOrder.created_at)).all()
+    return render_template('orders.html', orders_today=orders_today)
+
+# Previous orders (yesterday and earlier)
+@app.route('/admin/orders/previous')
+def admin_orders_previous():
+    from datetime import datetime, timedelta
+    today = datetime.now().date()
+    orders_prev = ShivdhabaOrder.query.filter(
+        ShivdhabaOrder.created_at < today
+    ).order_by(desc(ShivdhabaOrder.created_at)).all()
+    return render_template('orders_prev.html', orders_prev=orders_prev)
+    from datetime import datetime, timedelta
+    today = datetime.now().date()
+    orders_today = ShivdhabaOrder.query.filter(
+        ShivdhabaOrder.created_at >= today,
+        ShivdhabaOrder.created_at < today + timedelta(days=1)
+    ).order_by(desc(ShivdhabaOrder.created_at)).all()
+    return render_template('orders.html', orders_today=orders_today)
+
+# AJAX: Toggle delivered status
+@app.route('/admin/orders/toggle-delivered/<int:order_id>', methods=['POST'])
+def toggle_order_delivered(order_id):
+    order = ShivdhabaOrder.query.get_or_404(order_id)
+    order.delivered = not order.delivered
+    from app import db
+    db.session.commit()
+    return jsonify({'success': True, 'delivered': order.delivered})
+
+# AJAX: Get order details
+@app.route('/admin/orders/details/<int:order_id>')
+def get_order_details(order_id):
+    order = ShivdhabaOrder.query.get_or_404(order_id)
+    items = json.loads(order.items)
+    return jsonify({
+        'id': order.id,
+        'name': order.name,
+        'mobile': order.mobile,
+        'address': order.address,
+        'instructions': order.instructions,
+        'items': items,
+        'total': order.total,
+        'created_at': order.created_at.strftime('%Y-%m-%d %H:%M:%S') if order.created_at else '',
+        'delivered': order.delivered
+    })
 @app.route('/dishes')
 def list_dishes():
     dishes = Dish.query.all()

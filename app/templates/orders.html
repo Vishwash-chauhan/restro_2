@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-5xl mx-auto mt-12">
+  <h3 class="text-2xl font-bold mb-4 text-gray-800">Today's Orders</h3>
+  <div class="overflow-x-auto">
+    <table class="min-w-full bg-white rounded shadow">
+      <thead>
+        <tr class="bg-gray-100">
+          <th class="px-3 py-2 text-left">Order ID</th>
+          <th class="px-3 py-2 text-left">Name</th>
+          <th class="px-3 py-2 text-left">Mobile</th>
+          <th class="px-3 py-2 text-left">Time</th>
+          <th class="px-3 py-2 text-left">Total</th>
+          <th class="px-3 py-2 text-left">Delivered</th>
+          <th class="px-3 py-2 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders_today %}
+        <tr class="border-b hover:bg-gray-50">
+          <td class="px-3 py-2">{{ order.id }}</td>
+          <td class="px-3 py-2">{{ order.name }}</td>
+          <td class="px-3 py-2">{{ order.mobile }}</td>
+          <td class="px-3 py-2">{{ order.created_at.strftime('%H:%M') if order.created_at else '' }}</td>
+          <td class="px-3 py-2">Rs.{{ order.total }}</td>
+          <td class="px-3 py-2">
+            {% if order.delivered %}
+              <button onclick="toggleDelivered('{{ order.id }}', this)" class="bg-green-500 text-white px-3 py-1 rounded">Delivered</button>
+            {% else %}
+              <button onclick="toggleDelivered('{{ order.id }}', this)" class="bg-gray-400 text-white px-3 py-1 rounded">Not Delivered</button>
+            {% endif %}
+          </td>
+          <td class="px-3 py-2">
+            <button onclick="showOrderDetails('{{ order.id }}')" class="bg-blue-500 text-white px-3 py-1 rounded">View Details</button>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center py-4 text-gray-500">No orders today.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="flex justify-center mt-8">
+    <a href="{{ url_for('admin_orders_previous') }}" class="bg-gray-700 text-white px-6 py-2 rounded shadow hover:bg-gray-900 transition">View Previous Orders</a>
+  </div>
+</div>
+<!-- End main content block -->
+{% endblock %}
+<!-- Order Details Modal and scripts (reuse from dashboard.html) -->
+{% block extra_scripts %}
+<script>
+// Toggle delivered status
+async function toggleDelivered(orderId, btn) {
+  btn.disabled = true;
+  const resp = await fetch(`/admin/orders/toggle-delivered/${orderId}`, {method: 'POST'});
+  const data = await resp.json();
+  if (data.success) {
+    btn.textContent = data.delivered ? 'Delivered' : 'Not Delivered';
+    btn.classList.toggle('bg-green-500', data.delivered);
+    btn.classList.toggle('bg-gray-400', !data.delivered);
+  }
+  btn.disabled = false;
+}
+// Show order details modal
+async function showOrderDetails(orderId) {
+  const resp = await fetch(`/admin/orders/details/${orderId}`);
+  const data = await resp.json();
+  document.getElementById('orderModalId').textContent = data.id;
+  document.getElementById('orderModalName').textContent = data.name;
+  document.getElementById('orderModalMobile').textContent = data.mobile;
+  document.getElementById('orderModalAddress').textContent = data.address;
+  document.getElementById('orderModalInstructions').textContent = data.instructions || '-';
+  document.getElementById('orderModalCreated').textContent = data.created_at;
+  document.getElementById('orderModalTotal').textContent = 'Rs.' + data.total;
+  document.getElementById('orderModalDeliveredBtn').textContent = data.delivered ? 'Delivered' : 'Not Delivered';
+  document.getElementById('orderModalDeliveredBtn').className = data.delivered ? 'bg-green-500 text-white px-3 py-1 rounded' : 'bg-gray-400 text-white px-3 py-1 rounded';
+  document.getElementById('orderModalDeliveredBtn').onclick = function() { toggleDelivered(data.id, this); };
+  // Items
+  let itemsHtml = '';
+  for (const item of data.items) {
+    itemsHtml += `<tr><td class='px-2 py-1'>${item.name}</td><td class='px-2 py-1'>${item.half}</td><td class='px-2 py-1'>${item.full}</td><td class='px-2 py-1'>Rs.${item.item_total}</td></tr>`;
+  }
+  document.getElementById('orderModalItems').innerHTML = itemsHtml;
+  document.getElementById('orderDetailsModal').classList.remove('hidden');
+}
+function closeOrderModal() {
+  document.getElementById('orderDetailsModal').classList.add('hidden');
+}
+</script>
+<div id="orderDetailsModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
+    <button onclick="closeOrderModal()" class="absolute top-2 right-2 text-gray-500 hover:text-gray-800">&times;</button>
+    <h4 class="text-xl font-bold mb-2">Order #<span id="orderModalId"></span> Details</h4>
+    <div class="mb-2"><span class="font-semibold">Name:</span> <span id="orderModalName"></span></div>
+    <div class="mb-2"><span class="font-semibold">Mobile:</span> <span id="orderModalMobile"></span></div>
+    <div class="mb-2"><span class="font-semibold">Address:</span> <span id="orderModalAddress"></span></div>
+    <div class="mb-2"><span class="font-semibold">Instructions:</span> <span id="orderModalInstructions"></span></div>
+    <div class="mb-2"><span class="font-semibold">Placed At:</span> <span id="orderModalCreated"></span></div>
+    <div class="mb-2"><span class="font-semibold">Total:</span> <span id="orderModalTotal"></span></div>
+    <div class="mb-4"><span class="font-semibold">Delivered:</span> <button id="orderModalDeliveredBtn" class="px-3 py-1 rounded ml-2"></button></div>
+    <div>
+      <h5 class="font-semibold mb-1">Items:</h5>
+      <table class="min-w-full bg-gray-50 rounded">
+        <thead><tr><th class="px-2 py-1">Name</th><th class="px-2 py-1">Half</th><th class="px-2 py-1">Full</th><th class="px-2 py-1">Total</th></tr></thead>
+        <tbody id="orderModalItems"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

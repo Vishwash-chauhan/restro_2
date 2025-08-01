@@ -10,3 +10,4 @@ class ShivdhabaOrder(db.Model):
     items = db.Column(db.Text, nullable=False)  # Store as JSON string
     total = db.Column(db.Float, nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
+    delivered = db.Column(db.Boolean, default=False, nullable=False)
