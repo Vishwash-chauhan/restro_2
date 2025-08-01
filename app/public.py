@@ -96,7 +96,64 @@ def checkout():
     db.session.commit()
     session['cart'] = {}
     flash('Order placed successfully! Thank you for ordering.', 'success')
-    return redirect(url_for('public.menu'))
+    return redirect(url_for('public.order_success', order_id=order.id))
+# Order success page
+@public_bp.route('/shivdhaba/order-success/<int:order_id>')
+def order_success(order_id):
+    return render_template('public/order_success.html', order_id=order_id)
+
+# Download order details
+@public_bp.route('/shivdhaba/download-order/<int:order_id>')
+def download_order(order_id):
+    from app.models.order import ShivdhabaOrder
+    import io, json
+    from reportlab.lib.pagesizes import letter
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.units import mm
+    order = ShivdhabaOrder.query.get(order_id)
+    if not order:
+        flash('Order not found.', 'danger')
+        return redirect(url_for('public.menu'))
+    items = json.loads(order.items)
+    buffer = io.BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+    c.setTitle('Shiv Dhaba')
+    width, height = letter
+    y = height - 40
+    c.setFont('Helvetica-Bold', 18)
+    c.drawString(40, y, 'Order Receipt')
+    y -= 30
+    c.setFont('Helvetica', 12)
+    c.drawString(40, y, f"Order ID: {order.id}")
+    y -= 20
+    c.drawString(40, y, f"Placed At: {order.created_at.strftime('%Y-%m-%d %H:%M:%S') if hasattr(order, 'created_at') and order.created_at else 'N/A'}")
+    y -= 20
+    c.drawString(40, y, f"Name: {order.name}")
+    y -= 20
+    c.drawString(40, y, f"Mobile: {order.mobile}")
+    y -= 20
+    c.drawString(40, y, f"Address: {order.address}")
+    y -= 30
+    c.setFont('Helvetica-Bold', 14)
+    c.drawString(40, y, 'Items:')
+    y -= 20
+    c.setFont('Helvetica', 12)
+    for item in items:
+        item_line = f"{item['name']}  (Half: {item['half']}, Full: {item['full']})  Rs.{item['item_total']}"
+        c.drawString(50, y, item_line)
+        y -= 18
+        if y < 60:
+            c.showPage()
+            y = height - 40
+            c.setFont('Helvetica', 12)
+    y -= 10
+    c.setFont('Helvetica-Bold', 13)
+    c.drawString(40, y, f"Total: Rs.{order.total}")
+    c.showPage()
+    c.save()
+    buffer.seek(0)
+    from flask import send_file
+    return send_file(buffer, as_attachment=True, download_name=f'Shiv Dhaba Order {order.id}.pdf', mimetype='application/pdf')
 
 @public_bp.route('/shivdhaba/cart/add/<int:dish_id>', methods=['POST'])
 def add_to_cart(dish_id):
