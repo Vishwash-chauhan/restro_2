@@ -1,9 +1,13 @@
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash, jsonify
 from app.models.models import Dish, Category
 
 public_bp = Blueprint('public', __name__, template_folder='templates/public')
 
 @public_bp.route('/shivdhaba')
+def old_menu():
+    return redirect(url_for('public.menu'))
+
+@public_bp.route('/shivdhaba/menu')
 def menu():
     # Test session persistence
     session['test_key'] = session.get('test_key', 0) + 1
@@ -14,15 +18,19 @@ def menu():
         dishes = Dish.query.filter_by(category_id=category_id, is_available=True).all()
     else:
         dishes = Dish.query.filter_by(is_available=True).all()
-    # Calculate cart_count
+    # Calculate cart_count and get cart quantities
     cart = session.get('cart', {})
     cart_count = sum((item.get('half', 0) + item.get('full', 0)) for item in cart.values())
-    return render_template('/public/public_menu.html', categories=categories, dishes=dishes, selected_category=category_id, session_test=session['test_key'], cart_count=cart_count)
+    return render_template('/public/public_menu.html', categories=categories, dishes=dishes, selected_category=category_id, session_test=session['test_key'], cart_count=cart_count, cart=cart)
 
 @public_bp.route('/shivdhaba/dish/<int:dish_id>')
 def dish_detail(dish_id):
     dish = Dish.query.get_or_404(dish_id)
-    return render_template('dish_detail.html', dish=dish)
+    # Get cart quantities for this specific dish
+    cart = session.get('cart', {})
+    cart_count = sum((item.get('half', 0) + item.get('full', 0)) for item in cart.values())
+    dish_cart = cart.get(str(dish_id), {'half': 0, 'full': 0})
+    return render_template('dish_detail.html', dish=dish, cart_count=cart_count, dish_cart=dish_cart)
 
 @public_bp.route('/shivdhaba/cart')
 def view_cart():
@@ -168,6 +176,38 @@ def add_to_cart(dish_id):
     session['cart'] = cart
     flash('Item added to cart!', 'success')
     return redirect(request.referrer or url_for('public.menu'))
+
+@public_bp.route('/shivdhaba/cart/update-quantity/<int:dish_id>', methods=['POST'])
+def update_quantity(dish_id):
+    dish = Dish.query.get_or_404(dish_id)
+    data = request.get_json()
+    portion = data.get('portion')  # 'half' or 'full'
+    action = data.get('action')    # 'increase' or 'decrease'
+    
+    cart = session.get('cart', {})
+    if str(dish_id) not in cart:
+        cart[str(dish_id)] = {'half': 0, 'full': 0}
+    
+    if action == 'increase':
+        cart[str(dish_id)][portion] += 1
+    elif action == 'decrease':
+        cart[str(dish_id)][portion] = max(0, cart[str(dish_id)][portion] - 1)
+    
+    # Remove item from cart if both quantities are 0
+    if cart[str(dish_id)]['half'] == 0 and cart[str(dish_id)]['full'] == 0:
+        del cart[str(dish_id)]
+    
+    session['cart'] = cart
+    
+    # Calculate new cart count
+    cart_count = sum((item.get('half', 0) + item.get('full', 0)) for item in cart.values())
+    
+    return jsonify({
+        'success': True,
+        'cart_count': cart_count,
+        'item_half': cart[str(dish_id)]['half'] if str(dish_id) in cart else 0,
+        'item_full': cart[str(dish_id)]['full'] if str(dish_id) in cart else 0
+    })
 
 @public_bp.route('/shivdhaba/cart/update/<int:dish_id>', methods=['POST'])
 def update_cart(dish_id):
