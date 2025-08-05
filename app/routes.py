@@ -178,3 +178,16 @@ def delete_category(category_id):
     db.session.commit()
     flash('Category deleted!', 'success')
     return redirect(url_for('list_categories'))
+
+@app.route('/dishes/toggle-availability/<int:dish_id>', methods=['POST'])
+def toggle_dish_availability(dish_id):
+    dish = Dish.query.get_or_404(dish_id)
+    dish.is_available = not dish.is_available
+    db.session.commit()
+    
+    status = "available" if dish.is_available else "unavailable"
+    return jsonify({
+        'success': True,
+        'is_available': dish.is_available,
+        'message': f'Dish marked as {status}'
+    })

@@ -18,7 +18,15 @@
                     <li><span class="font-medium">Category:</span> {{ dish.category.name }}</li>
                     <li><span class="font-medium">Price (Half):</span> ₹{{ dish.price_half }}</li>
                     <li><span class="font-medium">Price (Full):</span> ₹{{ dish.price_full }}</li>
-                    <li><span class="font-medium">Available:</span> {{ 'Yes' if dish.is_available else 'No' }}</li>
+                    <li class="flex items-center justify-between">
+                        <span class="font-medium">Available:</span>
+                        <button 
+                            onclick="toggleAvailability({{ dish.id }}, this)" 
+                            class="relative inline-flex h-5 w-9 items-center rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 {{ 'bg-green-500' if dish.is_available else 'bg-gray-300' }}"
+                            id="toggle-{{ dish.id }}">
+                            <span class="inline-block h-4 w-4 transform rounded-full bg-white transition duration-200 ease-in-out {{ 'translate-x-4' if dish.is_available else 'translate-x-0' }}" id="toggle-dot-{{ dish.id }}"></span>
+                        </button>
+                    </li>
                     <li><span class="font-medium">Vegetarian:</span> {{ 'Yes' if dish.is_vegetarian else 'No' }}</li>
                     <li><span class="font-medium">Spice Level:</span> {{ dish.spice_level }}</li>
                 </ul>
@@ -34,4 +42,53 @@
         {% endfor %}
     </div>
 </div>
+
+<script>
+function toggleAvailability(dishId, buttonElement) {
+    // Get CSRF token from meta tag
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    
+    // Disable button during request
+    buttonElement.disabled = true;
+    
+    fetch(`/dishes/toggle-availability/${dishId}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update button appearance
+            const toggleDot = document.getElementById(`toggle-dot-${dishId}`);
+            
+            if (data.is_available) {
+                // Available - green background, dot to right
+                buttonElement.className = buttonElement.className.replace('bg-gray-300', 'bg-green-500');
+                toggleDot.className = toggleDot.className.replace('translate-x-0', 'translate-x-4');
+            } else {
+                // Unavailable - gray background, dot to left
+                buttonElement.className = buttonElement.className.replace('bg-green-500', 'bg-gray-300');
+                toggleDot.className = toggleDot.className.replace('translate-x-4', 'translate-x-0');
+            }
+            
+            // Show success message (optional)
+            // You could add a toast notification here
+            console.log(data.message);
+        } else {
+            alert('Failed to update dish availability. Please try again.');
+        }
+    })
+    .catch(error => {
+        console.error('Error updating dish availability:', error);
+        alert('Failed to update dish availability. Please try again.');
+    })
+    .finally(() => {
+        // Re-enable button
+        buttonElement.disabled = false;
+    });
+}
+</script>
 {% endblock %}
