@@ -21,7 +21,8 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def dashboard():
     dish_count = Dish.query.count()
     category_count = Category.query.count()
-    return render_template('dashboard.html', dish_count=dish_count, category_count=category_count)
+    order_count = ShivdhabaOrder.query.count()
+    return render_template('admin/dashboard.html', dish_count=dish_count, category_count=category_count, order_count=order_count)
 
 @app.route('/admin/orders')
 def admin_orders_today():
@@ -31,7 +32,7 @@ def admin_orders_today():
         ShivdhabaOrder.created_at >= today,
         ShivdhabaOrder.created_at < today + timedelta(days=1)
     ).order_by(desc(ShivdhabaOrder.created_at)).all()
-    return render_template('orders.html', orders_today=orders_today)
+    return render_template('admin/orders.html', orders_today=orders_today)
 
 # Previous orders (yesterday and earlier)
 @app.route('/admin/orders/previous')
@@ -41,14 +42,14 @@ def admin_orders_previous():
     orders_prev = ShivdhabaOrder.query.filter(
         ShivdhabaOrder.created_at < today
     ).order_by(desc(ShivdhabaOrder.created_at)).all()
-    return render_template('orders_prev.html', orders_prev=orders_prev)
+    return render_template('admin/orders_prev.html', orders_prev=orders_prev)
     from datetime import datetime, timedelta
     today = datetime.now().date()
     orders_today = ShivdhabaOrder.query.filter(
         ShivdhabaOrder.created_at >= today,
         ShivdhabaOrder.created_at < today + timedelta(days=1)
     ).order_by(desc(ShivdhabaOrder.created_at)).all()
-    return render_template('orders.html', orders_today=orders_today)
+    return render_template('admin/orders.html', orders_today=orders_today)
 
 # AJAX: Toggle delivered status
 @app.route('/admin/orders/toggle-delivered/<int:order_id>', methods=['POST'])
@@ -78,7 +79,7 @@ def get_order_details(order_id):
 @app.route('/dishes')
 def list_dishes():
     dishes = Dish.query.all()
-    return render_template('list_dishes.html', dishes=dishes)
+    return render_template('admin/list_dishes.html', dishes=dishes)
 
 @app.route('/dishes/add', methods=['GET', 'POST'])
 def add_dish():
@@ -108,7 +109,7 @@ def add_dish():
         db.session.commit()
         flash('Dish added successfully!', 'success')
         return redirect(url_for('list_dishes'))
-    return render_template('dish_form.html', form=form, action='Add')
+    return render_template('admin/dish_form.html', form=form, action='Add')
 
 @app.route('/dishes/edit/<int:dish_id>', methods=['GET', 'POST'])
 def edit_dish(dish_id):
@@ -134,7 +135,7 @@ def edit_dish(dish_id):
         db.session.commit()
         flash('Dish updated successfully!', 'success')
         return redirect(url_for('list_dishes'))
-    return render_template('dish_form.html', form=form, action='Edit')
+    return render_template('admin/dish_form.html', form=form, action='Edit')
 
 @app.route('/dishes/delete/<int:dish_id>', methods=['POST'])
 def delete_dish(dish_id):
@@ -147,7 +148,7 @@ def delete_dish(dish_id):
 @app.route('/categories')
 def list_categories():
     categories = Category.query.all()
-    return render_template('list_categories.html', categories=categories)
+    return render_template('admin/list_categories.html', categories=categories)
 
 @app.route('/categories/add', methods=['GET', 'POST'])
 def add_category():
@@ -158,7 +159,7 @@ def add_category():
         db.session.commit()
         flash('Category added!', 'success')
         return redirect(url_for('list_categories'))
-    return render_template('category_form.html', form=form, action='Add')
+    return render_template('admin/category_form.html', form=form, action='Add')
 
 @app.route('/categories/edit/<int:category_id>', methods=['GET', 'POST'])
 def edit_category(category_id):
@@ -169,7 +170,7 @@ def edit_category(category_id):
         db.session.commit()
         flash('Category updated!', 'success')
         return redirect(url_for('list_categories'))
-    return render_template('category_form.html', form=form, action='Edit')
+    return render_template('admin/category_form.html', form=form, action='Edit')
 
 @app.route('/categories/delete/<int:category_id>', methods=['POST'])
 def delete_category(category_id):

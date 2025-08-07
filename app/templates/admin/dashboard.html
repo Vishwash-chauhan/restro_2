@@ -1,8 +1,8 @@
-{% extends 'base.html' %}
+{% extends 'admin/base.html' %}
 {% block content %}
-<div class="max-w-4xl mx-auto mt-10">
+<div class="max-w-6xl mx-auto mt-10">
     <h2 class="font-bold text-3xl mb-8 text-gray-900">Admin Dashboard</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="bg-white rounded-xl shadow p-8 flex flex-col items-center">
             <h5 class="font-semibold text-lg mb-2 text-gray-700">Total Dishes</h5>
             <p class="text-3xl font-bold text-blue-600 mb-4">{{ dish_count }}</p>
@@ -12,6 +12,11 @@
             <h5 class="font-semibold text-lg mb-2 text-gray-700">Total Categories</h5>
             <p class="text-3xl font-bold text-green-600 mb-4">{{ category_count }}</p>
             <a href="{{ url_for('list_categories') }}" class="bg-green-600 text-white font-semibold rounded-lg px-6 py-2 shadow hover:bg-green-700 transition-all">View Categories</a>
+        </div>
+        <div class="bg-white rounded-xl shadow p-8 flex flex-col items-center">
+            <h5 class="font-semibold text-lg mb-2 text-gray-700">Total Orders</h5>
+            <p class="text-3xl font-bold text-orange-600 mb-4">{{ order_count }}</p>
+            <a href="/admin/orders" class="bg-orange-600 text-white font-semibold rounded-lg px-6 py-2 shadow hover:bg-orange-700 transition-all">View Orders</a>
         </div>
     </div>
 </div>

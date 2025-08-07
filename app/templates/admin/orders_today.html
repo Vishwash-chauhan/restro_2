@@ -1,7 +1,7 @@
-{% extends 'base.html' %}
+{% extends 'admin/base.html' %}
 {% block content %}
 <div class="max-w-5xl mx-auto mt-12">
-  <h3 class="text-2xl font-bold mb-4 text-gray-800">Previous Orders</h3>
+  <h3 class="text-2xl font-bold mb-4 text-gray-800">Today's Orders</h3>
   <div class="overflow-x-auto">
     <table class="min-w-full bg-white rounded shadow">
       <thead>
@@ -9,19 +9,19 @@
           <th class="px-3 py-2 text-left">Order ID</th>
           <th class="px-3 py-2 text-left">Name</th>
           <th class="px-3 py-2 text-left">Mobile</th>
-          <th class="px-3 py-2 text-left">Date</th>
+          <th class="px-3 py-2 text-left">Time</th>
           <th class="px-3 py-2 text-left">Total</th>
           <th class="px-3 py-2 text-left">Delivered</th>
           <th class="px-3 py-2 text-left">Actions</th>
         </tr>
       </thead>
       <tbody>
-        {% for order in orders_prev %}
+        {% for order in orders_today %}
         <tr class="border-b hover:bg-gray-50">
           <td class="px-3 py-2">{{ order.id }}</td>
           <td class="px-3 py-2">{{ order.name }}</td>
           <td class="px-3 py-2">{{ order.mobile }}</td>
-          <td class="px-3 py-2">{{ order.created_at.strftime('%Y-%m-%d %I:%M %p') if order.created_at else '' }}</td>
+          <td class="px-3 py-2">{{ order.created_at.strftime('%H:%M') if order.created_at else '' }}</td>
           <td class="px-3 py-2">Rs.{{ order.total }}</td>
           <td class="px-3 py-2">
             {% if order.delivered %}
@@ -35,25 +35,20 @@
           </td>
         </tr>
         {% else %}
-        <tr><td colspan="7" class="text-center py-4 text-gray-500">No previous orders.</td></tr>
+        <tr><td colspan="7" class="text-center py-4 text-gray-500">No orders today.</td></tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
-</div>
+<!-- End main content block -->
 {% endblock %}
+<!-- Order Details Modal and scripts (reuse from dashboard.html) -->
 {% block extra_scripts %}
 <script>
 // Toggle delivered status
 async function toggleDelivered(orderId, btn) {
   btn.disabled = true;
-  const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-  const resp = await fetch(`/admin/orders/toggle-delivered/${orderId}`, {
-    method: 'POST',
-    headers: {
-      'X-CSRFToken': csrfToken
-    }
-  });
+  const resp = await fetch(`/admin/orders/toggle-delivered/${orderId}`, {method: 'POST'});
   const data = await resp.json();
   if (data.success) {
     btn.textContent = data.delivered ? 'Delivered' : 'Not Delivered';
