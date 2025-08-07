@@ -17,7 +17,7 @@
         {% for dish in dishes %}
         {% set dish_cart = cart.get(dish.id|string, {'half': 0, 'full': 0}) %}
         <div class="bg-white rounded-xl shadow hover:shadow-lg transition h-full flex flex-col">
-            <a href="{{ url_for('public.dish_detail', dish_id=dish.id) }}" class="no-underline text-gray-900">
+            <a href="{{ url_for('public.dish_detail', slug=restaurant.slug, dish_id=dish.id) }}" class="no-underline text-gray-900">
                 {% if dish.image %}
                 <img src="{{ url_for('static', filename='images/' ~ dish.image) }}" class="rounded-t-xl w-full object-cover mb-2" alt="{{ dish.name }}" style="height:180px;">
                 {% endif %}
@@ -46,7 +46,7 @@
                 </div>
             </div>
             <div class="mt-auto flex justify-center px-2 pb-3">
-                <a href="{{ url_for('public.dish_detail', dish_id=dish.id) }}" class="border border-blue-600 text-blue-600 rounded-lg px-4 py-2 text-sm font-semibold hover:bg-blue-50 transition w-full text-center">View Details</a>
+                <a href="{{ url_for('public.dish_detail', slug=restaurant.slug, dish_id=dish.id) }}" class="border border-blue-600 text-blue-600 rounded-lg px-4 py-2 text-sm font-semibold hover:bg-blue-50 transition w-full text-center">View Details</a>
             </div>
         </div>
         {% endfor %}
@@ -54,7 +54,7 @@
 </div>
 
 <!-- Floating Cart Icon -->
-<a href="{{ url_for('public.view_cart') }}" class="fixed bottom-8 right-8 z-50 bg-white rounded-full shadow-lg w-16 h-16 flex items-center justify-center no-underline hover:bg-green-50 transition">
+<a href="{{ url_for('public.view_cart', slug=restaurant.slug) }}" class="fixed bottom-8 right-8 z-50 bg-white rounded-full shadow-lg w-16 h-16 flex items-center justify-center no-underline hover:bg-green-50 transition">
     <img src="https://cdn-icons-png.flaticon.com/512/263/263142.png" alt="Cart" class="w-8 h-8">
     <span class="absolute top-2 right-2 bg-red-500 text-white rounded-full px-2 py-0.5 text-xs font-bold min-w-[22px] text-center shadow" id="cart-count">{{ cart_count or 0 }}</span>
     <span class="sr-only">Cart</span>
@@ -70,7 +70,7 @@ function updateQuantity(dishId, portion, action, buttonElement) {
     buttonElement.className = buttonElement.className.replace('bg-gray-200', 'bg-blue-200');
     buttonElement.disabled = true;
     
-    fetch(`/shivdhaba/cart/update-quantity/${dishId}`, {
+    fetch(`/{{ restaurant.slug }}/cart/update-quantity/${dishId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

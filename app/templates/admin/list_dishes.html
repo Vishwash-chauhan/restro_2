@@ -3,7 +3,7 @@
 <div class="max-w-6xl mx-auto mt-10 bg-white rounded-xl shadow p-6">
     <div class="flex items-center justify-between mb-6">
         <h2 class="font-bold text-2xl text-gray-900">Dishes</h2>
-        <a href="{{ url_for('add_dish') }}" class="bg-blue-600 text-white font-semibold rounded px-4 py-2 shadow hover:bg-blue-700 transition-all text-sm">Add Dish</a>
+        <a href="{{ url_for('add_dish', slug=restaurant.slug) }}" class="bg-blue-600 text-white font-semibold rounded px-4 py-2 shadow hover:bg-blue-700 transition-all text-sm">Add Dish</a>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for dish in dishes %}
@@ -31,8 +31,8 @@
                     <li><span class="font-medium">Spice Level:</span> {{ dish.spice_level }}</li>
                 </ul>
                 <div class="flex gap-2 mt-auto">
-                    <a href="{{ url_for('edit_dish', dish_id=dish.id) }}" class="bg-yellow-400 text-white rounded px-3 py-1 text-xs font-semibold hover:bg-yellow-500 transition">Edit</a>
-                    <form action="{{ url_for('delete_dish', dish_id=dish.id) }}" method="post" class="inline">
+                    <a href="{{ url_for('edit_dish', slug=restaurant.slug, dish_id=dish.id) }}" class="bg-yellow-400 text-white rounded px-3 py-1 text-xs font-semibold hover:bg-yellow-500 transition">Edit</a>
+                    <form action="{{ url_for('delete_dish', slug=restaurant.slug, dish_id=dish.id) }}" method="post" class="inline">
                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="bg-red-500 text-white rounded px-3 py-1 text-xs font-semibold hover:bg-red-600 transition" onclick="return confirm('Delete this dish?')">Delete</button>
                     </form>

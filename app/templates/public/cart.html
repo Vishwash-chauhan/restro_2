@@ -11,43 +11,41 @@
             <div class="flex flex-col justify-between flex-1 px-4 py-3">
                 <h5 class="font-bold text-lg mb-1">{{ item.name }}</h5>
                 <p class="mb-2 text-gray-600"><span class="font-semibold">Category:</span> {{ item.category }}</p>
-                <form method="post" action="{{ url_for('public.update_cart', dish_id=item.id) }}" class="mb-2">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="mb-2">
                     <div class="flex flex-col gap-2">
                         {% if item.price_half %}
                         <div class="flex items-center gap-2">
                             <label class="min-w-[40px] text-sm">Half:</label>
-                            <button type="button" class="bg-gray-200 text-gray-700 rounded px-2 py-1 text-xs font-bold" onclick="this.nextElementSibling.stepDown(); this.nextElementSibling.dispatchEvent(new Event('change'))">-</button>
-                            <input type="number" name="half_qty" value="{{ item.half }}" min="0" class="w-12 text-center border rounded px-1 py-1 text-sm" oninput="if(this.value<0)this.value=0">
-                            <button type="button" class="bg-gray-200 text-gray-700 rounded px-2 py-1 text-xs font-bold" onclick="this.previousElementSibling.stepUp(); this.previousElementSibling.dispatchEvent(new Event('change'))">+</button>
+                            <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded px-2 py-1 text-xs font-bold transition" onclick="updateCartQuantity({{ item.id }}, 'half', 'decrease', this)">-</button>
+                            <input type="number" value="{{ item.half }}" min="0" class="w-12 text-center border rounded px-1 py-1 text-sm" readonly id="half-qty-{{ item.id }}">
+                            <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded px-2 py-1 text-xs font-bold transition" onclick="updateCartQuantity({{ item.id }}, 'half', 'increase', this)">+</button>
                             <span class="bg-blue-600 text-white rounded px-2 py-1 text-xs ml-2">₹{{ item.price_half }}</span>
                         </div>
                         {% endif %}
                         {% if item.price_full %}
                         <div class="flex items-center gap-2">
                             <label class="min-w-[40px] text-sm">Full:</label>
-                            <button type="button" class="bg-gray-200 text-gray-700 rounded px-2 py-1 text-xs font-bold" onclick="this.nextElementSibling.stepDown(); this.nextElementSibling.dispatchEvent(new Event('change'))">-</button>
-                            <input type="number" name="full_qty" value="{{ item.full }}" min="0" class="w-12 text-center border rounded px-1 py-1 text-sm" oninput="if(this.value<0)this.value=0">
-                            <button type="button" class="bg-gray-200 text-gray-700 rounded px-2 py-1 text-xs font-bold" onclick="this.previousElementSibling.stepUp(); this.previousElementSibling.dispatchEvent(new Event('change'))">+</button>
+                            <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded px-2 py-1 text-xs font-bold transition" onclick="updateCartQuantity({{ item.id }}, 'full', 'decrease', this)">-</button>
+                            <input type="number" value="{{ item.full }}" min="0" class="w-12 text-center border rounded px-1 py-1 text-sm" readonly id="full-qty-{{ item.id }}">
+                            <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-700 rounded px-2 py-1 text-xs font-bold transition" onclick="updateCartQuantity({{ item.id }}, 'full', 'increase', this)">+</button>
                             <span class="bg-green-600 text-white rounded px-2 py-1 text-xs ml-2">₹{{ item.price_full }}</span>
                         </div>
                         {% endif %}
                     </div>
                     <div class="flex gap-2 mt-2">
-                        <button type="submit" class="border border-blue-600 text-blue-600 rounded-lg px-4 py-1 text-sm font-semibold hover:bg-blue-50 transition">Update</button>
-                    </form>
-                    <form method="post" action="{{ url_for('public.remove_from_cart', dish_id=item.id) }}">
-                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                        <button type="submit" class="border border-red-600 text-red-600 rounded-lg px-4 py-1 text-sm font-semibold hover:bg-red-50 transition">Remove</button>
-                    </form>
+                        <form method="post" action="{{ url_for('public.remove_from_cart', slug=restaurant.slug, dish_id=item.id) }}" class="inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="border border-red-600 text-red-600 rounded-lg px-4 py-1 text-xs font-semibold hover:bg-red-50 transition" onclick="return confirm('Remove this item from cart?')">Remove</button>
+                        </form>
                     </div>
-                <div class="mt-2 text-right"><span class="font-semibold">Item Total:</span> ₹{{ item.item_total }}</div>
+                </div>
+                <div class="mt-2 text-right"><span class="font-semibold">Item Total:</span> ₹<span id="item-total-{{ item.id }}">{{ item.item_total }}</span></div>
             </div>
         </div>
         {% endfor %}
     </div>
     <div class="mt-6 text-right">
-        <h4 class="font-bold text-xl">Total: ₹{{ total }}</h4>
+        <h4 class="font-bold text-xl">Total: ₹<span id="cart-total">{{ total }}</span></h4>
     </div>
     {% else %}
     <div class="bg-blue-50 text-blue-900 px-4 py-2 rounded mb-4 text-sm">Your cart is empty.</div>
@@ -66,7 +64,7 @@
     <div class="bg-blue-600 text-white py-4 px-6 text-center rounded-t-xl">
       <h5 class="text-2xl font-bold tracking-wide">Checkout</h5>
     </div>
-    <form method="post" action="{{ url_for('public.checkout') }}" class="p-6 space-y-4">
+    <form method="post" action="{{ url_for('public.checkout', slug=restaurant.slug) }}" class="p-6 space-y-4">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <div class="flex flex-col gap-2">
         <label class="text-sm font-semibold text-gray-700">Name</label>
@@ -117,6 +115,66 @@
             document.body.style.overflow = '';
         }
     });
+
+    // Function to update cart quantity automatically
+    function updateCartQuantity(dishId, portion, action, buttonElement) {
+        // Get CSRF token from meta tag
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
+        // Show loading state
+        const originalBg = buttonElement.className;
+        buttonElement.className = buttonElement.className.replace('bg-gray-200', 'bg-blue-200');
+        buttonElement.disabled = true;
+        
+        fetch(`/{{ restaurant.slug }}/cart/update-quantity/${dishId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({
+                portion: portion,
+                action: action
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update the quantity display
+                document.getElementById(`${portion}-qty-${dishId}`).value = data[`item_${portion}`];
+                
+                // Update the item total
+                document.getElementById(`item-total-${dishId}`).textContent = data.item_total;
+                
+                // Update the cart total
+                document.getElementById('cart-total').textContent = data.cart_total;
+                
+                // If both quantities are 0, reload the page to remove the item
+                if (data.item_half === 0 && data.item_full === 0) {
+                    location.reload();
+                    return;
+                }
+                
+                // Show success feedback
+                buttonElement.className = buttonElement.className.replace('bg-blue-200', 'bg-green-200');
+                setTimeout(() => {
+                    buttonElement.className = originalBg;
+                    buttonElement.disabled = false;
+                }, 300);
+            } else {
+                // Reset button on error
+                buttonElement.className = originalBg;
+                buttonElement.disabled = false;
+                alert('Failed to update cart. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error updating cart:', error);
+            buttonElement.className = originalBg;
+            buttonElement.disabled = false;
+            alert('Failed to update cart. Please try again.');
+        });
+    }
 </script>
 {% endif %}
 

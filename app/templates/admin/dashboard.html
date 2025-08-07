@@ -6,17 +6,17 @@
         <div class="bg-white rounded-xl shadow p-8 flex flex-col items-center">
             <h5 class="font-semibold text-lg mb-2 text-gray-700">Total Dishes</h5>
             <p class="text-3xl font-bold text-blue-600 mb-4">{{ dish_count }}</p>
-            <a href="{{ url_for('list_dishes') }}" class="bg-blue-600 text-white font-semibold rounded-lg px-6 py-2 shadow hover:bg-blue-700 transition-all">View Dishes</a>
+            <a href="{{ url_for('list_dishes', slug=restaurant.slug) }}" class="bg-blue-600 text-white font-semibold rounded-lg px-6 py-2 shadow hover:bg-blue-700 transition-all">View Dishes</a>
         </div>
         <div class="bg-white rounded-xl shadow p-8 flex flex-col items-center">
             <h5 class="font-semibold text-lg mb-2 text-gray-700">Total Categories</h5>
             <p class="text-3xl font-bold text-green-600 mb-4">{{ category_count }}</p>
-            <a href="{{ url_for('list_categories') }}" class="bg-green-600 text-white font-semibold rounded-lg px-6 py-2 shadow hover:bg-green-700 transition-all">View Categories</a>
+            <a href="{{ url_for('list_categories', slug=restaurant.slug) }}" class="bg-green-600 text-white font-semibold rounded-lg px-6 py-2 shadow hover:bg-green-700 transition-all">View Categories</a>
         </div>
         <div class="bg-white rounded-xl shadow p-8 flex flex-col items-center">
             <h5 class="font-semibold text-lg mb-2 text-gray-700">Total Orders</h5>
             <p class="text-3xl font-bold text-orange-600 mb-4">{{ order_count }}</p>
-            <a href="/admin/orders" class="bg-orange-600 text-white font-semibold rounded-lg px-6 py-2 shadow hover:bg-orange-700 transition-all">View Orders</a>
+            <a href="{{ url_for('admin_orders_today', slug=restaurant.slug) }}" class="bg-orange-600 text-white font-semibold rounded-lg px-6 py-2 shadow hover:bg-orange-700 transition-all">View Orders</a>
         </div>
     </div>
 </div>

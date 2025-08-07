@@ -35,7 +35,7 @@
                             {% endif %}
                         </div>
                         <div class="mt-4 flex justify-center">
-                            <a href="{{ url_for('public.menu') }}" class="border border-blue-600 text-blue-600 rounded-lg px-4 py-2 text-sm font-semibold hover:bg-blue-50 transition w-full text-center">Back to Menu</a>
+                            <a href="{{ url_for('public.menu', slug=restaurant.slug) }}" class="border border-blue-600 text-blue-600 rounded-lg px-4 py-2 text-sm font-semibold hover:bg-blue-50 transition w-full text-center">Back to Menu</a>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-gray-700 mt-4">
@@ -50,7 +50,7 @@
 </div>
 
 <!-- Floating Cart Icon -->
-<a href="{{ url_for('public.view_cart') }}" class="fixed bottom-8 right-8 z-50 bg-white rounded-full shadow-lg w-16 h-16 flex items-center justify-center no-underline hover:bg-green-50 transition">
+<a href="{{ url_for('public.view_cart', slug=restaurant.slug) }}" class="fixed bottom-8 right-8 z-50 bg-white rounded-full shadow-lg w-16 h-16 flex items-center justify-center no-underline hover:bg-green-50 transition">
     <img src="https://cdn-icons-png.flaticon.com/512/263/263142.png" alt="Cart" class="w-8 h-8">
     <span class="absolute top-2 right-2 bg-red-500 text-white rounded-full px-2 py-0.5 text-xs font-bold min-w-[22px] text-center shadow" id="cart-count">{{ cart_count or 0 }}</span>
     <span class="sr-only">Cart</span>
@@ -66,7 +66,7 @@ function updateQuantity(dishId, portion, action, buttonElement) {
     buttonElement.className = buttonElement.className.replace('bg-gray-200', 'bg-blue-200');
     buttonElement.disabled = true;
     
-    fetch(`/shivdhaba/cart/update-quantity/${dishId}`, {
+    fetch(`/{{ restaurant.slug }}/cart/update-quantity/${dishId}`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',

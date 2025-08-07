@@ -41,7 +41,7 @@
     </table>
   </div>
   <div class="flex justify-center mt-8">
-    <a href="{{ url_for('admin_orders_previous') }}" class="bg-gray-700 text-white px-6 py-2 rounded shadow hover:bg-gray-900 transition">View Previous Orders</a>
+    <a href="{{ url_for('admin_orders_previous', slug=restaurant.slug) }}" class="bg-gray-700 text-white px-6 py-2 rounded shadow hover:bg-gray-900 transition">View Previous Orders</a>
   </div>
 </div>
 <!-- End main content block -->

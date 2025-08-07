@@ -1,0 +1,115 @@
+{% extends 'super_admin/base.html' %}
+
+{% block content %}
+<div class="px-4 py-6 sm:px-0">
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">Add New Restaurant</h1>
+        <p class="mt-2 text-sm text-gray-600">Create a new restaurant profile on the platform</p>
+    </div>
+
+    <div class="max-w-2xl bg-white shadow-md rounded-md">
+        <form method="POST" enctype="multipart/form-data" class="space-y-6 p-6">
+            {{ form.hidden_tag() }}
+            
+            <div>
+                {{ form.name.label(class="block text-sm font-medium text-gray-700") }}
+                {{ form.name(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") }}
+                {% if form.name.errors %}
+                    <div class="mt-2 text-sm text-red-600">
+                        {% for error in form.name.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                {{ form.slug.label(class="block text-sm font-medium text-gray-700") }}
+                {{ form.slug(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") }}
+                <p class="mt-1 text-xs text-gray-500">URL-friendly name (will be used in web addresses)</p>
+                {% if form.slug.errors %}
+                    <div class="mt-2 text-sm text-red-600">
+                        {% for error in form.slug.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                {{ form.address.label(class="block text-sm font-medium text-gray-700") }}
+                {{ form.address(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500", rows="3") }}
+                {% if form.address.errors %}
+                    <div class="mt-2 text-sm text-red-600">
+                        {% for error in form.address.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                {{ form.contact.label(class="block text-sm font-medium text-gray-700") }}
+                {{ form.contact(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") }}
+                {% if form.contact.errors %}
+                    <div class="mt-2 text-sm text-red-600">
+                        {% for error in form.contact.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                {{ form.primary_location.label(class="block text-sm font-medium text-gray-700") }}
+                {{ form.primary_location(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") }}
+                {% if form.primary_location.errors %}
+                    <div class="mt-2 text-sm text-red-600">
+                        {% for error in form.primary_location.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                {{ form.logo.label(class="block text-sm font-medium text-gray-700") }}
+                {{ form.logo(class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") }}
+                <p class="mt-1 text-xs text-gray-500">Upload restaurant logo (optional)</p>
+                {% if form.logo.errors %}
+                    <div class="mt-2 text-sm text-red-600">
+                        {% for error in form.logo.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div>
+                {{ form.brand_color.label(class="block text-sm font-medium text-gray-700") }}
+                {{ form.brand_color(class="mt-1 block w-20 h-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") }}
+                <p class="mt-1 text-xs text-gray-500">Primary brand color for the restaurant</p>
+                {% if form.brand_color.errors %}
+                    <div class="mt-2 text-sm text-red-600">
+                        {% for error in form.brand_color.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center">
+                {{ form.is_active(class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded") }}
+                {{ form.is_active.label(class="ml-2 block text-sm text-gray-900") }}
+            </div>
+
+            <div class="flex justify-end space-x-4">
+                <a href="{{ url_for('super_admin_restaurants') }}" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Cancel
+                </a>
+                {{ form.submit(class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

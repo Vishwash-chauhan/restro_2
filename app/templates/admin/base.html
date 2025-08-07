@@ -12,14 +12,16 @@
 <body>
 <nav class="bg-gray-900 border-b mb-4 w-full">
   <div class="container mx-auto px-2 md:px-8 flex items-center justify-between h-16">
-    <a href="{{ url_for('dashboard') }}" class="font-bold text-xl text-white">Resto Admin</a>
+    <a href="{{ url_for('restaurant_admin_dashboard', slug=restaurant.slug) }}" class="font-bold text-xl text-white">{{ restaurant.name }} Admin</a>
     <button id="adminNavToggle" class="md:hidden text-gray-200 focus:outline-none">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
     </button>
     <div id="adminNavMenu" class="hidden md:flex md:items-center gap-6">
-      <a href="{{ url_for('dashboard') }}" class="text-gray-200 hover:text-blue-400 font-medium transition">Dashboard</a>
-      <a href="{{ url_for('list_dishes') }}" class="text-gray-200 hover:text-blue-400 font-medium transition">Dishes</a>
-      <a href="{{ url_for('list_categories') }}" class="text-gray-200 hover:text-blue-400 font-medium transition">Categories</a>
+      <a href="{{ url_for('restaurant_admin_dashboard', slug=restaurant.slug) }}" class="text-gray-200 hover:text-blue-400 font-medium transition">Dashboard</a>
+      <a href="{{ url_for('list_dishes', slug=restaurant.slug) }}" class="text-gray-200 hover:text-blue-400 font-medium transition">Dishes</a>
+      <a href="{{ url_for('list_categories', slug=restaurant.slug) }}" class="text-gray-200 hover:text-blue-400 font-medium transition">Categories</a>
+      <a href="{{ url_for('admin_orders_today', slug=restaurant.slug) }}" class="text-gray-200 hover:text-blue-400 font-medium transition">Orders</a>
+      <a href="{{ url_for('public.menu', slug=restaurant.slug) }}" class="text-gray-200 hover:text-green-400 font-medium transition">View Menu</a>
     </div>
   </div>
 </nav>
