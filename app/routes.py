@@ -35,11 +35,13 @@ def generate_slug(name):
 # ==================== SUPER ADMIN ROUTES ====================
 @app.route('/')
 def super_admin_dashboard():
-    restaurant_count = Restaurant.query.count()
+    total_restaurants = Restaurant.query.count()
+    active_restaurants = Restaurant.query.filter_by(is_active=True).count()
     total_dishes = Dish.query.count()
     total_orders = ShivdhabaOrder.query.count()
     return render_template('super_admin/dashboard.html', 
-                         restaurant_count=restaurant_count,
+                         total_restaurants=total_restaurants,
+                         active_restaurants=active_restaurants,
                          total_dishes=total_dishes, 
                          total_orders=total_orders)
 

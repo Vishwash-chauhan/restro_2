@@ -1,0 +1,77 @@
+{% extends 'super_admin/base.html' %}
+
+{% block content %}
+<div class="px-4 py-6 sm:px-0">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">Restaurants</h1>
+        <a href="{{ url_for('add_restaurant') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+            Add New Restaurant
+        </a>
+    </div>
+
+    <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        {% if restaurants %}
+        <ul class="divide-y divide-gray-200">
+            {% for restaurant in restaurants %}
+            <li class="px-4 py-4 sm:px-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            {% if restaurant.logo %}
+                            <img class="h-16 w-16 rounded-lg object-cover" src="{{ url_for('static', filename='images/' + restaurant.logo) }}" alt="{{ restaurant.name }}">
+                            {% else %}
+                            <div class="h-16 w-16 rounded-lg bg-gray-300 flex items-center justify-center">
+                                <span class="text-gray-600 font-bold text-lg">{{ restaurant.name[0] }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="ml-4">
+                            <div class="flex items-center">
+                                <h3 class="text-lg font-medium text-gray-900">{{ restaurant.name }}</h3>
+                                {% if restaurant.is_active %}
+                                <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Active
+                                </span>
+                                {% else %}
+                                <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    Inactive
+                                </span>
+                                {% endif %}
+                            </div>
+                            <p class="text-sm text-gray-500">{{ restaurant.address }}</p>
+                            <p class="text-sm text-gray-500">Contact: {{ restaurant.contact }}</p>
+                            <p class="text-sm text-gray-500">URL: <a href="/{{ restaurant.slug }}/menu" class="text-indigo-600 hover:text-indigo-500" target="_blank">/{{ restaurant.slug }}/menu</a></p>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <a href="{{ url_for('edit_restaurant', restaurant_id=restaurant.id) }}" class="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600">
+                            Edit
+                        </a>
+                        <a href="/{{ restaurant.slug }}/admin" class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600" target="_blank">
+                            Admin Panel
+                        </a>
+                        <form method="post" action="{{ url_for('delete_restaurant', restaurant_id=restaurant.id) }}" class="inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600" onclick="return confirm('Are you sure you want to delete {{ restaurant.name }}?')">
+                                Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <div class="text-center py-12">
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No restaurants</h3>
+            <p class="mt-1 text-sm text-gray-500">Get started by adding a new restaurant.</p>
+            <div class="mt-6">
+                <a href="{{ url_for('add_restaurant') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                    Add New Restaurant
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends 'super_admin/base.html' %}
+
+{% block content %}
+<div class="px-4 py-6 sm:px-0">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-3xl font-bold text-gray-900">{{ action }} Restaurant</h1>
+        <a href="{{ url_for('list_restaurants') }}" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+            Back to Restaurants
+        </a>
+    </div>
+
+    <div class="bg-white shadow rounded-lg">
+        <form method="POST" enctype="multipart/form-data" class="space-y-6 p-6">
+            {{ form.hidden_tag() }}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    {{ form.name.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ form.name(class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") }}
+                    {% for error in form.name.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    {{ form.slug.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ form.slug(class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") }}
+                    {% for error in form.slug.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                    <p class="mt-1 text-sm text-gray-500">URL slug for the restaurant (e.g., 'shiv-dhaba')</p>
+                </div>
+            </div>
+
+            <div>
+                {{ form.address.label(class="block text-sm font-medium text-gray-700") }}
+                {{ form.address(class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") }}
+                {% for error in form.address.errors %}
+                    <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    {{ form.contact.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ form.contact(class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") }}
+                    {% for error in form.contact.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    {{ form.primary_location.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ form.primary_location(class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") }}
+                    {% for error in form.primary_location.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    {{ form.logo.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ form.logo(class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") }}
+                    {% for error in form.logo.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+
+                <div>
+                    {{ form.brand_color.label(class="block text-sm font-medium text-gray-700") }}
+                    {{ form.brand_color(class="mt-1 block w-full h-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500") }}
+                    {% for error in form.brand_color.errors %}
+                        <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="flex items-center">
+                {{ form.is_active(class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded") }}
+                {{ form.is_active.label(class="ml-2 block text-sm text-gray-900") }}
+            </div>
+
+            <div class="flex justify-end space-x-3">
+                <a href="{{ url_for('list_restaurants') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Cancel
+                </a>
+                <button type="submit" class="bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    {{ action }} Restaurant
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Auto-generate slug from restaurant name
+document.addEventListener('DOMContentLoaded', function() {
+    const nameField = document.getElementById('name');
+    const slugField = document.getElementById('slug');
+    
+    nameField.addEventListener('input', function() {
+        if (slugField.value === '' || slugField.dataset.autoGenerated === 'true') {
+            const slug = this.value
+                .toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .replace(/\s+/g, '-')
+                .replace(/-+/g, '-')
+                .trim();
+            slugField.value = slug;
+            slugField.dataset.autoGenerated = 'true';
+        }
+    });
+    
+    slugField.addEventListener('input', function() {
+        this.dataset.autoGenerated = 'false';
+    });
+});
+</script>
+{% endblock %}

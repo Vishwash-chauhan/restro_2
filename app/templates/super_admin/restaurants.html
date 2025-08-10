@@ -4,7 +4,7 @@
 <div class="px-4 py-6 sm:px-0">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-gray-900">Restaurants</h1>
-        <a href="{{ url_for('super_admin_add_restaurant') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+        <a href="{{ url_for('add_restaurant') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
             Add New Restaurant
         </a>
     </div>
@@ -52,7 +52,7 @@
         {% else %}
         <div class="px-4 py-6 text-center text-gray-500">
             <p class="text-lg">No restaurants found.</p>
-            <a href="{{ url_for('super_admin_add_restaurant') }}" class="text-indigo-600 hover:text-indigo-900 mt-2 inline-block">Add the first restaurant</a>
+            <a href="{{ url_for('add_restaurant') }}" class="text-indigo-600 hover:text-indigo-900 mt-2 inline-block">Add the first restaurant</a>
         </div>
         {% endif %}
     </div>
