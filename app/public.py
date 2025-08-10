@@ -151,6 +151,13 @@ def download_order(slug, order_id):
     c.setTitle(restaurant.name)
     width, height = letter
     y = height - 40
+    
+    # Restaurant name at the top
+    c.setFont('Helvetica-Bold', 20)
+    c.drawString(40, y, restaurant.name)
+    y -= 25
+    
+    # Order Receipt header
     c.setFont('Helvetica-Bold', 18)
     c.drawString(40, y, 'Order Receipt')
     y -= 30
